@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#34785a">
+    <meta name="description" content="A playful place for little learners to meet animals and discover their sounds.">
+    <title>Tiny Tails — Animal Explorer</title>
+    <link rel="icon" href="./assets/tiny-tails-icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #263b32;
+        --muted: #758078;
+        --green: #34785a;
+        --paper: #fff9f0;
+        --line: #eeeae1;
+        --shadow: 0 12px 30px rgb(38 59 50 / 6%);
+      }
+
+      * { box-sizing: border-box; }
+      [hidden] { display: none !important; }
+
+      body {
+        margin: 0;
+        padding-bottom: 96px;
+        min-width: 320px;
+        background:
+          radial-gradient(ellipse at 2% 5%, #fff0cd 0, transparent 24rem),
+          var(--paper);
+        color: var(--ink);
+        font-family: Nunito, "Trebuchet MS", Arial, sans-serif;
+      }
+
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+
+      .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-height: 88px;
+      }
+
+      .brand-icon {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        border-radius: 50%;
+        background: #ffe9b8;
+      }
+
+      .brand-icon img { width: 43px; height: 43px; }
+      .brand-copy { flex: 1; }
+      .brand-copy h1 { margin: 0; font-size: 22px; font-weight: 900; }
+      .brand-copy p { margin: 3px 0 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+
+      .icon-button {
+        display: grid;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: white;
+        color: var(--green);
+        box-shadow: 0 3px 12px rgb(38 59 50 / 6%);
+        font-size: 20px;
+      }
+
+      .icon-button.active { background: #ffe4e8; color: #d94f68; }
+
+      .hero {
+        position: relative;
+        display: flex;
+        min-height: 226px;
+        align-items: center;
+        overflow: hidden;
+        padding: 28px 38px;
+        border-radius: 30px;
+        background: linear-gradient(118deg, #34785a, #559a70);
+        color: white;
+        isolation: isolate;
+      }
+
+      .hero::after {
+        position: absolute;
+        z-index: -1;
+        right: 115px;
+        bottom: -100px;
+        width: 320px;
+        height: 230px;
+        border-radius: 50%;
+        background: rgb(255 255 255 / 8%);
+        content: "";
+        transform: rotate(-18deg);
+      }
+
+      .hero-copy { max-width: 480px; }
+      .eyebrow {
+        display: inline-flex;
+        padding: 7px 12px;
+        border-radius: 99px;
+        background: rgb(255 255 255 / 17%);
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.3px;
+      }
+
+      .hero h2 { margin: 14px 0 8px; font-size: clamp(30px, 5vw, 43px); line-height: 1.08; }
+      .hero p { margin: 0; color: rgb(255 255 255 / 86%); font-size: 15px; }
+      .hero-art {
+        position: absolute;
+        right: 30px;
+        bottom: 13px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .hero-photo {
+        width: clamp(82px, 10vw, 112px);
+        aspect-ratio: 1;
+        border: 4px solid rgb(255 255 255 / 78%);
+        border-radius: 25px;
+        object-fit: cover;
+        box-shadow: 0 11px 18px rgb(0 0 0 / 18%);
+        transform: rotate(-6deg);
+      }
+
+      .hero-photo + .hero-photo {
+        margin-top: 37px;
+        transform: rotate(7deg);
+      }
+
+      .sparkle { position: absolute; top: 26px; right: 34%; font-size: 26px; opacity: .8; }
+      .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 31px 0 15px; }
+      .section-heading h2 { margin: 0; font-size: 22px; }
+      .count { color: var(--muted); font-size: 13px; font-weight: 700; }
+      .controls { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; }
+      .filters { display: flex; gap: 8px; overflow-x: auto; padding: 1px 1px 5px; scrollbar-width: none; }
+      .filters::-webkit-scrollbar { display: none; }
+
+      .filter {
+        flex: 0 0 auto;
+        min-height: 38px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        background: white;
+        color: #58635c;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .filter.selected { border-color: var(--green); background: var(--green); color: white; }
+
+      .search {
+        width: min(220px, 30vw);
+        min-width: 135px;
+        height: 39px;
+        padding: 0 13px;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        outline-color: #80ae91;
+        background: white;
+      }
+
+      .voice-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: -7px 0 20px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: rgb(255 255 255 / 78%);
+      }
+
+      .voice-label { color: var(--ink); font-size: 13px; font-weight: 900; }
+      .voice-select {
+        min-height: 36px;
+        padding: 0 28px 0 11px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: white;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .voice-preview {
+        min-height: 36px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 10px;
+        background: #e8f2eb;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .voice-help { margin: 0 0 0 auto; color: var(--muted); font-size: 11px; }
+
+      .animal-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+      .animal-card {
+        position: relative;
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid rgb(238 234 225 / 80%);
+        border-radius: 22px;
+        background: white;
+        box-shadow: var(--shadow);
+        transition: transform .16s ease, box-shadow .16s ease;
+      }
+
+      .animal-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px rgb(38 59 50 / 10%); }
+      .animal-open { display: block; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+      .animal-picture {
+        position: relative;
+        display: grid;
+        min-height: 145px;
+        overflow: hidden;
+        place-items: center;
+        border-radius: 16px;
+      }
+      .animal-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .animal-fallback { font-size: 70px; }
+      .animal-name { margin-top: 11px; font-size: 17px; font-weight: 900; }
+      .animal-sound { margin-top: 3px; color: var(--muted); font-size: 13px; font-weight: 700; }
+      .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+      .category-label { color: #8a938c; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; }
+      .sound-button, .favorite-button {
+        display: grid;
+        width: 35px;
+        height: 35px;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+      }
+
+      .sound-button { background: #e8f2eb; color: var(--green); font-size: 17px; }
+      .favorite-button { position: absolute; top: 19px; right: 19px; background: rgb(255 255 255 / 88%); color: #a4ada6; font-size: 17px; }
+      .favorite-button.active { color: #e76b7d; }
+
+      .empty-state { grid-column: 1 / -1; padding: 32px 16px; color: var(--muted); text-align: center; }
+      .empty-state span { display: block; margin-bottom: 8px; font-size: 42px; }
+
+      .quiz-banner {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 27px 0 36px;
+        padding: 17px 19px;
+        border: 0;
+        border-radius: 22px;
+        background: #ffefc8;
+        color: var(--ink);
+        text-align: left;
+        width: 100%;
+      }
+
+      .quiz-icon { display: grid; flex: 0 0 48px; height: 48px; place-items: center; border-radius: 50%; background: #ffd978; font-size: 24px; }
+      .quiz-copy { flex: 1; }
+      .quiz-copy strong { display: block; font-size: 16px; }
+      .quiz-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+      .quiz-arrow { font-size: 22px; }
+
+      .photo-credits {
+        margin: 0 0 32px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgb(255 255 255 / 70%);
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .photo-credits summary { color: var(--ink); cursor: pointer; font-weight: 900; }
+      .photo-credits ul { display: grid; gap: 7px; padding-left: 18px; }
+      .photo-credits li { line-height: 1.5; }
+
+      dialog {
+        width: min(440px, calc(100% - 28px));
+        max-height: min(90vh, 760px);
+        padding: 0;
+        overflow-y: auto;
+        border: 0;
+        border-radius: 28px;
+        background: var(--paper);
+        color: var(--ink);
+        box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
+      }
+
+      dialog::backdrop { background: rgb(24 39 31 / 48%); backdrop-filter: blur(3px); }
+      .dialog-content { padding: 28px; text-align: center; }
+      .dialog-close { float: right; width: 35px; height: 35px; border: 0; border-radius: 50%; background: #efeee8; color: var(--ink); font-size: 19px; }
+      .detail-photo-wrap {
+        position: relative;
+        width: 190px;
+        height: 150px;
+        margin: 26px auto 13px;
+        overflow: hidden;
+        border-radius: 22px;
+        background: #e8f2eb;
+      }
+      .detail-photo { width: 100%; height: 100%; object-fit: cover; }
+      .detail-photo-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: 78px; }
+      .photo-caption { margin: 0 auto 16px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+      .photo-caption a, .photo-credits a { color: var(--green); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+      .detail-title { margin: 0; font-size: 30px; }
+      .detail-subtitle { margin: 6px 0 19px; color: var(--muted); }
+      .detail-sound { margin: 0 0 17px; color: var(--green); font-size: 25px; font-weight: 900; }
+      .primary-button { width: 100%; min-height: 50px; border: 0; border-radius: 14px; background: var(--green); color: white; font-weight: 900; }
+      .text-button { margin-top: 9px; padding: 10px; border: 0; background: transparent; color: var(--ink); font-weight: 800; }
+      .quiz-title { margin: 10px 0 8px; font-size: 23px; }
+      .quiz-question { margin: 0 0 3px; color: var(--green); font-size: 27px; font-weight: 900; }
+      .listen-button { margin: 7px auto 14px; border: 0; background: transparent; color: var(--green); font-weight: 800; }
+      .quiz-options { display: grid; gap: 9px; }
+      .quiz-option { min-height: 50px; border: 1px solid var(--line); border-radius: 14px; background: white; color: var(--ink); font-size: 16px; font-weight: 800; }
+      .quiz-option.correct { border-color: var(--green); background: #e3f4e9; }
+      .quiz-option.wrong { border-color: #e76b7d; background: #ffe4e8; }
+      .quiz-result { min-height: 24px; margin: 13px 0 9px; color: var(--green); font-weight: 900; }
+      .toast { position: fixed; right: 20px; bottom: 20px; z-index: 4; max-width: min(420px, calc(100% - 40px)); padding: 13px 17px; border-radius: 14px; background: var(--ink); color: white; box-shadow: var(--shadow); }
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+      .app-dock {
+        position: fixed;
+        z-index: 5;
+        left: 50%;
+        bottom: max(14px, env(safe-area-inset-bottom));
+        display: flex;
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid rgb(238 234 225 / 90%);
+        border-radius: 20px;
+        background: rgb(255 255 255 / 94%);
+        box-shadow: 0 12px 36px rgb(38 59 50 / 16%);
+        backdrop-filter: blur(12px);
+        transform: translateX(-50%);
+      }
+      .dock-button {
+        display: flex;
+        min-width: 94px;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 13px;
+        border: 0;
+        border-radius: 14px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .dock-button.active { background: #e8f2eb; color: var(--green); }
+      .dock-icon { font-size: 18px; line-height: 1; }
+
+      .learning-section { margin: 32px 0; scroll-margin-top: 20px; }
+      .learning-intro { margin: 6px 0 17px; color: var(--muted); font-size: 14px; }
+      .learning-grid { display: grid; gap: 12px; }
+      .alphabet-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .number-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; }
+      .learning-card {
+        display: flex;
+        min-width: 0;
+        min-height: 104px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: white;
+        color: var(--ink);
+        box-shadow: var(--shadow);
+      }
+      .learning-card:hover { border-color: #9dc7aa; transform: translateY(-2px); }
+      .letter-pair { display: flex; align-items: baseline; gap: 9px; color: var(--green); font-size: 35px; font-weight: 900; line-height: 1.1; }
+      .letter-pair small { color: #e39b51; font-size: 27px; }
+      .learning-hint { margin-top: 8px; color: var(--muted); font-size: 11px; font-weight: 800; }
+      .number-card { min-height: 70px; border-radius: 14px; }
+      .number-digit { color: var(--green); font-size: 24px; font-weight: 900; line-height: 1.1; }
+      .number-name { margin-top: 5px; color: var(--muted); font-size: 9px; font-weight: 800; }
+
+      @media (max-width: 850px) {
+        .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .animal-picture { min-height: 130px; }
+        .alphabet-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        .number-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+      }
+
+      @media (max-width: 620px) {
+        .shell { width: min(100% - 28px, 500px); }
+        .topbar { min-height: 77px; }
+        .hero { min-height: 205px; padding: 22px; border-radius: 25px; }
+        .hero-copy { max-width: 65%; }
+        .hero-art { right: 9px; bottom: 16px; gap: 5px; }
+        .hero-photo { width: 68px; border-width: 3px; border-radius: 17px; }
+        .hero-photo + .hero-photo { margin-top: 27px; }
+        .sparkle { right: 31%; }
+        .section-heading { margin-top: 25px; }
+        .animal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+        .animal-picture { min-height: 122px; font-size: 60px; }
+        .animal-card { padding: 10px; }
+        .favorite-button { top: 16px; right: 16px; }
+        .controls { display: block; }
+        .search { width: 100%; margin-top: 9px; }
+        .voice-bar { flex-wrap: wrap; gap: 8px; }
+        .voice-help { flex-basis: 100%; margin-left: 0; }
+        .app-dock { width: min(calc(100% - 28px), 420px); justify-content: space-around; bottom: max(10px, env(safe-area-inset-bottom)); }
+        .dock-button { min-width: 0; min-height: 54px; flex: 1; flex-direction: column; gap: 3px; padding: 4px 3px; font-size: 10px; }
+        .alphabet-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+        .number-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+        .learning-card { min-height: 88px; border-radius: 14px; }
+        .letter-pair { font-size: 31px; }
+        .letter-pair small { font-size: 24px; }
+        .number-card { min-height: 61px; }
+        .number-digit { font-size: 21px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand-icon"><img src="./assets/tiny-tails-icon.svg" alt=""></div>
+        <div class="brand-copy">
+          <h1>Tiny Tails</h1>
+          <p>BIG sounds, little learners</p>
+        </div>
+        <button class="icon-button" id="favoritesToggle" type="button" aria-label="Show favorites" title="Show favorites">♡</button>
+        <button class="icon-button" id="installButton" type="button" aria-label="Install Tiny Tails and add its taskbar icon" title="Install app and pin to taskbar">⬇</button>
+      </header>
+
+      <section class="hero" aria-labelledby="heroTitle">
+        <span class="sparkle" aria-hidden="true">✦</span>
+        <div class="hero-copy">
+          <span class="eyebrow">LET’S EXPLORE!</span>
+          <h2 id="heroTitle">Who makes<br>that sound?</h2>
+          <p>Meet your new animal friends!</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <img class="hero-photo" src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Ol_Kinyei_Lion.jpg" alt="">
+          <img class="hero-photo" src="https://upload.wikimedia.org/wikipedia/commons/6/61/Magra_Sheep_Flock.JPG" alt="">
+        </div>
+      </section>
+
+      <section id="animals" aria-labelledby="animalHeading">
+        <div class="section-heading">
+          <h2 id="animalHeading">Meet the animals</h2>
+          <span class="count" id="animalCount" aria-live="polite"></span>
+        </div>
+        <div class="controls">
+          <nav class="filters" id="filters" aria-label="Filter animals"></nav>
+          <label>
+            <span class="sr-only">Search animals</span>
+            <input class="search" id="searchInput" type="search" placeholder="🔎  Find an animal…" autocomplete="off">
+          </label>
+        </div>
+        <div class="voice-bar">
+          <label class="voice-label" for="voiceSelect">🗣️ Voice</label>
+          <select class="voice-select" id="voiceSelect" aria-describedby="voiceHelp">
+            <option value="natural">Natural</option>
+            <option value="female">Female-style</option>
+            <option value="kid">Kid-style</option>
+          </select>
+          <button class="voice-preview" id="previewVoice" type="button">▶ Preview</button>
+          <p class="voice-help" id="voiceHelp">Uses English voices on this device; kid-style raises the pitch.</p>
+        </div>
+        <div class="animal-grid" id="animalGrid"></div>
+      </section>
+
+      <button class="quiz-banner" id="openQuiz" type="button">
+        <span class="quiz-icon" aria-hidden="true">💡</span>
+        <span class="quiz-copy"><strong>Ready to play?</strong><small>Guess who makes the sound!</small></span>
+        <span class="quiz-arrow" aria-hidden="true">→</span>
+      </button>
+      <details class="photo-credits">
+        <summary>Photo credits and licenses</summary>
+        <ul id="photoCredits"></ul>
+      </details>
+
+      <section class="learning-section" id="alphabet" aria-labelledby="alphabetHeading">
+        <div class="section-heading">
+          <h2 id="alphabetHeading">Big and small letters</h2>
+          <span class="count">A–Z</span>
+        </div>
+        <p class="learning-intro">Tap a letter to hear its name.</p>
+        <div class="learning-grid alphabet-grid" id="alphabetGrid"></div>
+      </section>
+
+      <section class="learning-section" id="numbers" aria-labelledby="numbersHeading">
+        <div class="section-heading">
+          <h2 id="numbersHeading">Numbers 1 to 100</h2>
+          <span class="count">Count and learn</span>
+        </div>
+        <p class="learning-intro">Tap a number to hear it.</p>
+        <div class="learning-grid number-grid" id="numberGrid"></div>
+      </section>
+    </main>
+
+    <nav class="app-dock" aria-label="App navigation">
+      <button class="dock-button active" id="dockExplore" type="button" aria-current="page">
+        <span class="dock-icon" aria-hidden="true">🐾</span><span>Animals</span>
+      </button>
+      <button class="dock-button" id="dockAlphabet" type="button">
+        <span class="dock-icon" aria-hidden="true">🔤</span><span>ABC</span>
+      </button>
+      <button class="dock-button" id="dockNumbers" type="button">
+        <span class="dock-icon" aria-hidden="true">🔢</span><span>123</span>
+      </button>
+      <button class="dock-button" id="dockQuiz" type="button">
+        <span class="dock-icon" aria-hidden="true">🎯</span><span>Quiz</span>
+      </button>
+      <button class="dock-button" id="dockPhotos" type="button">
+        <span class="dock-icon" aria-hidden="true">📷</span><span>Credits</span>
+      </button>
+    </nav>
+
+    <dialog id="detailDialog" aria-labelledby="detailTitle">
+      <div class="dialog-content" id="detailContent"></div>
+    </dialog>
+
+    <dialog id="quizDialog" aria-labelledby="quizTitle">
+      <div class="dialog-content">
+        <button class="dialog-close" id="closeQuiz" type="button" aria-label="Close quiz">×</button>
+        <div aria-hidden="true" style="font-size:44px">🎯</div>
+        <h2 class="quiz-title" id="quizTitle">Who makes this sound?</h2>
+        <p class="quiz-question" id="quizQuestion"></p>
+        <button class="listen-button" id="listenClue" type="button">🔊 Listen to the clue</button>
+        <div class="quiz-options" id="quizOptions"></div>
+        <p class="quiz-result" id="quizResult" aria-live="polite"></p>
+        <button class="primary-button" id="nextQuestion" type="button" hidden>Play again</button>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" hidden></div>
+
+    <script>
+      const animals = [
+        {
+          name: "Cow", emoji: "🐮", sound: "Moo", category: "Farm", color: "#eaf2ff",
+          image: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Cow_animal.jpg",
+          photoTitle: "Cow animal", creator: "Harivishnu ES", creatorUrl: "https://commons.wikimedia.org/wiki/User:Harivishnu_ES",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=126641212", license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+        },
+        {
+          name: "Dog", emoji: "🐶", sound: "Woof", category: "Pets", color: "#ffebd8",
+          image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/-dog_-animal_-zoo_-istanbul_-turkey_-tourism_-%D8%AD%D9%8A%D9%88%D8%A7%D9%86%D8%A7%D8%AA_%2814160754557%29.jpg",
+          photoTitle: "-dog -animal -zoo -istanbul -turkey -tourism -حيوانات (14160754557)", creator: "Abdullah Muashi from Jeddah, KSA", creatorUrl: "https://www.flickr.com/people/47159514@N05/",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=34063932", license: "CC BY 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+        },
+        {
+          name: "Cat", emoji: "🐱", sound: "Meow", category: "Pets", color: "#ffe4ec",
+          image: "https://upload.wikimedia.org/wikipedia/commons/8/86/Domestic_cat_portrait.jpg",
+          photoTitle: "Domestic cat portrait", creator: "The Roving Rokibul", creatorUrl: "https://commons.wikimedia.org/wiki/User:The_Roving_Rokibul",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=194866408", license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+        },
+        {
+          name: "Lion", emoji: "🦁", sound: "Roar", category: "Wild", color: "#fff0c9",
+          image: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Ol_Kinyei_Lion.jpg",
+          photoTitle: "Ol Kinyei Lion", creator: "Stuart Price", creatorUrl: "https://commons.wikimedia.org/w/index.php?curid=78683714",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=78683714", license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
+        },
+        {
+          name: "Duck", emoji: "🦆", sound: "Quack", category: "Birds", color: "#e3f4e9",
+          image: "https://upload.wikimedia.org/wikipedia/commons/b/bf/White-backed_Duck_RWD2.jpg",
+          photoTitle: "White-backed Duck RWD2", creator: "DickDaniels", creatorUrl: "https://commons.wikimedia.org/wiki/User:DickDaniels",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=15119332", license: "CC BY-SA 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/"
+        },
+        {
+          name: "Sheep", emoji: "🐑", sound: "Baa", category: "Farm", color: "#f0e8ff",
+          image: "https://upload.wikimedia.org/wikipedia/commons/6/61/Magra_Sheep_Flock.JPG",
+          photoTitle: "Magra Sheep Flock", creator: "Akbarkq", creatorUrl: "https://commons.wikimedia.org/wiki/User:Akbarkq",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=25466121", license: "CC BY-SA 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/"
+        },
+        {
+          name: "Elephant", emoji: "🐘", sound: "Toot", category: "Wild", color: "#e3f3f4",
+          image: "https://upload.wikimedia.org/wikipedia/commons/c/ca/Elephant_animal.jpg",
+          photoTitle: "Elephant animal", creator: "Swethasakthivel", creatorUrl: "https://commons.wikimedia.org/w/index.php?curid=154005751",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=154005751", license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
+        },
+        {
+          name: "Owl", emoji: "🦉", sound: "Hoot", category: "Birds", color: "#ffe9d8",
+          image: "https://upload.wikimedia.org/wikipedia/commons/5/52/Great_Gray_Owl_-_Bird_of_Prey_exhibit_at_Waddington_Air_Show_-_geograph.org.uk_-_1570223.jpg",
+          photoTitle: "Great Gray Owl - Bird of Prey exhibit at Waddington Air Show", creator: "Mick Lobb", creatorUrl: "https://www.geograph.org.uk/profile/26633",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=14327114", license: "CC BY-SA 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
+        },
+        {
+          name: "Pig", emoji: "🐷", sound: "Oink", category: "Farm", color: "#ffe4ec",
+          image: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Pig_farm_Vampula_9.jpg",
+          photoTitle: "Pig farm Vampula 9", creator: "kallerna", creatorUrl: "https://commons.wikimedia.org/wiki/User:Kallerna",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=110364679", license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+        },
+        {
+          name: "Monkey", emoji: "🐵", sound: "Ooh-ooh", category: "Wild", color: "#f3e8d6",
+          image: "https://upload.wikimedia.org/wikipedia/commons/1/14/Barbary_Macaque_Portrait_%28120775973%29.jpeg",
+          photoTitle: "Barbary Macaque Portrait", creator: "Matthias", creatorUrl: "https://500px.com/matthiasfoto",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=71282289", license: "CC BY 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/3.0/"
+        },
+        {
+          name: "Rooster", emoji: "🐓", sound: "Cock-a-doodle-doo", category: "Farm", color: "#fff0c9",
+          image: "https://upload.wikimedia.org/wikipedia/commons/c/ce/White_Rooster_%28159577385%29.jpeg",
+          photoTitle: "White Rooster", creator: "Kelly Fletcher", creatorUrl: "https://500px.com/Kelly-Leanne-Photography",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=73623321", license: "CC BY-SA 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/"
+        },
+        {
+          name: "Frog", emoji: "🐸", sound: "Ribbit", category: "Wild", color: "#e3f4e9",
+          image: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Green_Frog_%28147672241%29.jpeg",
+          photoTitle: "Green Frog", creator: "Romanos Kalamatianos", creatorUrl: "https://500px.com/romkalam",
+          photoUrl: "https://commons.wikimedia.org/w/index.php?curid=73793656", license: "CC BY 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/3.0/"
+        }
+      ];
+
+      const categories = ["All", "Farm", "Wild", "Pets", "Birds"];
+      const favoritesKey = "tiny-tails-favorites";
+      let favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]");
+      let selectedCategory = "All";
+      let favoritesOnly = false;
+      let activeAnimal = null;
+      let quizAnswer = null;
+      let toastTimer;
+
+      const grid = document.querySelector("#animalGrid");
+      const filters = document.querySelector("#filters");
+      const count = document.querySelector("#animalCount");
+      const favoritesToggle = document.querySelector("#favoritesToggle");
+      const dockButtons = document.querySelectorAll(".dock-button");
+      const alphabetGrid = document.querySelector("#alphabetGrid");
+      const numberGrid = document.querySelector("#numberGrid");
+      const detailDialog = document.querySelector("#detailDialog");
+      const quizDialog = document.querySelector("#quizDialog");
+      const toast = document.querySelector("#toast");
+      const voiceSelect = document.querySelector("#voiceSelect");
+      const feminineVoiceName = /female|woman|samantha|victoria|karen|zira|aria|jenny|susan|ava|moira|tessa|serena|allison/i;
+      const childVoiceName = /child|kid|young|girl|junior/i;
+
+      function announce(message) {
+        toast.textContent = message;
+        toast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
+      }
+
+      function setDockActive(activeButton) {
+        dockButtons.forEach(button => {
+          const active = button === activeButton;
+          button.classList.toggle("active", active);
+          if (active) button.setAttribute("aria-current", "page");
+          else button.removeAttribute("aria-current");
+        });
+      }
+
+      function setFavoritesView(enabled) {
+        favoritesOnly = enabled;
+        favoritesToggle.classList.toggle("active", enabled);
+        favoritesToggle.textContent = enabled ? "♥" : "♡";
+        favoritesToggle.setAttribute("aria-label", enabled ? "Show all animals" : "Show favorites");
+        favoritesToggle.title = enabled ? "Show all animals" : "Show favorites";
+        setDockActive(document.querySelector("#dockExplore"));
+        renderAnimals();
+      }
+
+      function speak(message) {
+        if (!("speechSynthesis" in window)) {
+          announce("Speech playback is not available in this browser.");
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = "en-US";
+        const voices = window.speechSynthesis.getVoices();
+        const englishVoices = voices.filter(voice => voice.lang.toLowerCase().startsWith("en"));
+        const mode = voiceSelect.value;
+        const preferredVoice = mode === "kid"
+          ? englishVoices.find(voice => childVoiceName.test(voice.name))
+            || englishVoices.find(voice => feminineVoiceName.test(voice.name))
+          : mode === "female"
+            ? englishVoices.find(voice => feminineVoiceName.test(voice.name))
+            : null;
+        utterance.voice = preferredVoice || englishVoices.find(voice => voice.default) || englishVoices[0] || null;
+        utterance.rate = mode === "kid" ? 0.9 : 0.78;
+        utterance.pitch = mode === "kid" ? 1.45 : mode === "female" ? 1.1 : 1;
+        utterance.onerror = () => announce("Speech playback could not start.");
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function renderFilters() {
+        filters.innerHTML = categories.map(category => `
+          <button class="filter ${selectedCategory === category ? "selected" : ""}"
+            type="button" data-category="${category}" aria-pressed="${selectedCategory === category}">
+            ${category}
+          </button>`).join("");
+      }
+
+      function renderAnimals() {
+        const query = document.querySelector("#searchInput").value.trim().toLowerCase();
+        const visible = animals.filter(animal =>
+          (selectedCategory === "All" || animal.category === selectedCategory) &&
+          (!favoritesOnly || favorites.includes(animal.name)) &&
+          `${animal.name} ${animal.sound} ${animal.category}`.toLowerCase().includes(query)
+        );
+
+        document.querySelector("#animalHeading").textContent =
+          favoritesOnly ? "Your favorites" : "Meet the animals";
+        count.textContent = `${visible.length} ${visible.length === 1 ? "friend" : "friends"}`;
+        grid.innerHTML = visible.length ? visible.map(animal => `
+          <article class="animal-card">
+            <button class="favorite-button ${favorites.includes(animal.name) ? "active" : ""}"
+              type="button" data-favorite="${animal.name}"
+              aria-label="${favorites.includes(animal.name) ? "Remove" : "Add"} ${animal.name} ${favorites.includes(animal.name) ? "from" : "to"} favorites">
+              ${favorites.includes(animal.name) ? "♥" : "♡"}
+            </button>
+            <button class="animal-open" type="button" data-open="${animal.name}" aria-label="Learn about the ${animal.name}">
+              <span class="animal-picture" style="background:${animal.color}">
+                <img class="animal-photo" src="${animal.image}" alt="Photo of the ${animal.name.toLowerCase()}" loading="lazy" decoding="async">
+                <span class="animal-fallback" data-photo-fallback hidden aria-hidden="true">${animal.emoji}</span>
+              </span>
+              <span class="animal-name">${animal.name}</span>
+              <span class="animal-sound">“${animal.sound}!”</span>
+            </button>
+            <div class="card-actions">
+              <span class="category-label">${animal.category}</span>
+              <button class="sound-button" type="button" data-speak="${animal.name}"
+                aria-label="Hear the ${animal.name}">🔊</button>
+            </div>
+          </article>`).join("") : `
+          <div class="empty-state"><span>🐾</span>
+            ${favoritesOnly ? "Tap a heart to save a favorite!" : "No animal friends found. Try another search."}
+          </div>`;
+      }
+
+      function toggleFavorite(name) {
+        favorites = favorites.includes(name)
+          ? favorites.filter(favorite => favorite !== name)
+          : [...favorites, name];
+        localStorage.setItem(favoritesKey, JSON.stringify(favorites));
+        document.querySelector("#favoritesToggle").classList.toggle("active", favoritesOnly);
+        renderAnimals();
+        if (activeAnimal?.name === name) renderDetail(activeAnimal);
+      }
+
+      function renderDetail(animal) {
+        const saved = favorites.includes(animal.name);
+        document.querySelector("#detailContent").innerHTML = `
+          <button class="dialog-close" type="button" data-close-detail aria-label="Close details">×</button>
+          <div class="detail-photo-wrap" style="background:${animal.color}">
+            <img class="detail-photo" src="${animal.image}" alt="Photo of the ${animal.name.toLowerCase()}" decoding="async">
+            <span class="detail-photo-fallback" data-photo-fallback hidden aria-hidden="true">${animal.emoji}</span>
+          </div>
+          <h2 class="detail-title" id="detailTitle">${animal.name}</h2>
+          <p class="detail-subtitle">A ${animal.category.toLowerCase()} animal</p>
+          <p class="photo-caption">
+            “${escapeHtml(animal.photoTitle)}” by
+            <a href="${animal.creatorUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(animal.creator)}</a>
+            · <a href="${animal.licenseUrl}" target="_blank" rel="noopener noreferrer">${animal.license}</a>
+            · <a href="${animal.photoUrl}" target="_blank" rel="noopener noreferrer">Photo source</a>
+          </p>
+          <p class="detail-sound">“${animal.sound}!”</p>
+          <button class="primary-button" type="button" data-detail-speak>🔊 &nbsp; Hear the ${animal.name.toLowerCase()}</button>
+          <button class="text-button" type="button" data-detail-favorite>${saved ? "♥  Saved to favorites" : "♡  Add to favorites"}</button>`;
+      }
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        })[character]);
+      }
+
+      function renderPhotoCredits() {
+        document.querySelector("#photoCredits").innerHTML = animals.map(animal => `
+          <li>
+            “${escapeHtml(animal.photoTitle)}” by
+            <a href="${animal.creatorUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(animal.creator)}</a>
+            · <a href="${animal.licenseUrl}" target="_blank" rel="noopener noreferrer">${animal.license}</a>
+            · <a href="${animal.photoUrl}" target="_blank" rel="noopener noreferrer">source</a>
+          </li>`).join("");
+      }
+
+      function renderAlphabet() {
+        alphabetGrid.innerHTML = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ", letter => `
+          <button class="learning-card" type="button" data-letter="${letter}"
+            aria-label="Hear uppercase ${letter} and lowercase ${letter.toLowerCase()}">
+            <span class="letter-pair">${letter}<small>${letter.toLowerCase()}</small></span>
+            <span class="learning-hint">Big &amp; small</span>
+          </button>`).join("");
+      }
+
+      function numberName(number) {
+        const ones = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+        const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+        const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+        if (number < 10) return ones[number];
+        if (number < 20) return teens[number - 10];
+        if (number < 100) return `${tens[Math.floor(number / 10)]}${number % 10 ? `-${ones[number % 10]}` : ""}`;
+        return "one hundred";
+      }
+
+      function renderNumbers() {
+        numberGrid.innerHTML = Array.from({ length: 100 }, (_, index) => {
+          const number = index + 1;
+          return `
+            <button class="learning-card number-card" type="button" data-number="${number}"
+              aria-label="Hear ${number}, ${numberName(number)}">
+              <span class="number-digit">${number}</span>
+              <span class="number-name">${numberName(number)}</span>
+            </button>`;
+        }).join("");
+      }
+
+      function startQuiz() {
+        quizAnswer = animals[Math.floor(Math.random() * animals.length)];
+        const choices = [quizAnswer];
+        while (choices.length < 4) {
+          const choice = animals[Math.floor(Math.random() * animals.length)];
+          if (!choices.includes(choice)) choices.push(choice);
+        }
+        choices.sort(() => Math.random() - 0.5);
+        document.querySelector("#quizQuestion").textContent = `“${quizAnswer.sound}!”`;
+        document.querySelector("#quizResult").textContent = "";
+        document.querySelector("#nextQuestion").hidden = true;
+        document.querySelector("#quizOptions").innerHTML = choices.map(animal => `
+          <button class="quiz-option" type="button" data-answer="${animal.name}">
+            ${animal.emoji} &nbsp; ${animal.name}
+          </button>`).join("");
+        quizDialog.showModal();
+      }
+
+      filters.addEventListener("click", event => {
+        const button = event.target.closest("[data-category]");
+        if (!button) return;
+        selectedCategory = button.dataset.category;
+        renderFilters();
+        renderAnimals();
+      });
+
+      function showPhotoFallback(event) {
+        const image = event.target;
+        if (!image.matches(".animal-photo, .detail-photo")) return;
+        image.hidden = true;
+        const fallback = image.parentElement.querySelector("[data-photo-fallback]");
+        if (fallback) fallback.hidden = false;
+      }
+
+      grid.addEventListener("error", showPhotoFallback, true);
+      document.querySelector("#detailContent").addEventListener("error", showPhotoFallback, true);
+      document.querySelector(".hero-art").addEventListener("error", event => {
+        if (event.target.matches("img")) event.target.hidden = true;
+      }, true);
+
+      grid.addEventListener("click", event => {
+        const favoriteButton = event.target.closest("[data-favorite]");
+        if (favoriteButton) {
+          toggleFavorite(favoriteButton.dataset.favorite);
+          return;
+        }
+        const soundButton = event.target.closest("[data-speak]");
+        if (soundButton) {
+          const animal = animals.find(item => item.name === soundButton.dataset.speak);
+          speak(`${animal.sound}, says the ${animal.name}.`);
+          return;
+        }
+        const openButton = event.target.closest("[data-open]");
+        if (openButton) {
+          activeAnimal = animals.find(item => item.name === openButton.dataset.open);
+          renderDetail(activeAnimal);
+          detailDialog.showModal();
+        }
+      });
+
+      document.querySelector("#detailContent").addEventListener("click", event => {
+        if (event.target.closest("[data-close-detail]")) detailDialog.close();
+        if (event.target.closest("[data-detail-speak]") && activeAnimal) {
+          speak(`${activeAnimal.sound}, says the ${activeAnimal.name}.`);
+        }
+        if (event.target.closest("[data-detail-favorite]") && activeAnimal) {
+          toggleFavorite(activeAnimal.name);
+        }
+      });
+
+      favoritesToggle.addEventListener("click", () => setFavoritesView(!favoritesOnly));
+      document.querySelector("#dockExplore").addEventListener("click", () => {
+        setFavoritesView(false);
+        document.querySelector("#animals").scrollIntoView({ behavior: "smooth" });
+      });
+      document.querySelector("#dockAlphabet").addEventListener("click", event => {
+        setDockActive(event.currentTarget);
+        document.querySelector("#alphabet").scrollIntoView({ behavior: "smooth" });
+      });
+      document.querySelector("#dockNumbers").addEventListener("click", event => {
+        setDockActive(event.currentTarget);
+        document.querySelector("#numbers").scrollIntoView({ behavior: "smooth" });
+      });
+      document.querySelector("#dockQuiz").addEventListener("click", () => {
+        setDockActive(document.querySelector("#dockQuiz"));
+        document.querySelector("#openQuiz").click();
+      });
+      document.querySelector("#dockPhotos").addEventListener("click", () => {
+        const credits = document.querySelector(".photo-credits");
+        credits.open = true;
+        setDockActive(document.querySelector("#dockPhotos"));
+        credits.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      alphabetGrid.addEventListener("click", event => {
+        const button = event.target.closest("[data-letter]");
+        if (!button) return;
+        const letter = button.dataset.letter;
+        speak(`Uppercase ${letter}. Lowercase ${letter.toLowerCase()}.`);
+      });
+      numberGrid.addEventListener("click", event => {
+        const button = event.target.closest("[data-number]");
+        if (!button) return;
+        const number = Number(button.dataset.number);
+        speak(`${number}, ${numberName(number)}.`);
+      });
+
+      document.querySelector("#searchInput").addEventListener("input", renderAnimals);
+      document.querySelector("#previewVoice").addEventListener("click", () => {
+        speak("Hello, friend! Let us learn about the animals.");
+      });
+      document.querySelector("#openQuiz").addEventListener("click", startQuiz);
+      document.querySelector("#closeQuiz").addEventListener("click", () => quizDialog.close());
+      quizDialog.addEventListener("close", () => {
+        setDockActive(document.querySelector("#dockExplore"));
+      });
+      document.querySelector("#listenClue").addEventListener("click", () => {
+        speak(`Which animal says ${quizAnswer.sound}?`);
+      });
+      document.querySelector("#quizOptions").addEventListener("click", event => {
+        const button = event.target.closest("[data-answer]");
+        if (!button) return;
+        const correct = button.dataset.answer === quizAnswer.name;
+        document.querySelectorAll(".quiz-option").forEach(option => {
+          option.disabled = true;
+          if (option.dataset.answer === quizAnswer.name) option.classList.add("correct");
+          else if (option === button) option.classList.add("wrong");
+        });
+        document.querySelector("#quizResult").textContent = correct
+          ? "You got it! Great listening! 🎉"
+          : `Good try! It was the ${quizAnswer.name}.`;
+        document.querySelector("#nextQuestion").hidden = false;
+      });
+      document.querySelector("#nextQuestion").addEventListener("click", startQuiz);
+
+      renderFilters();
+      renderAnimals();
+      renderPhotoCredits();
+      renderAlphabet();
+      renderNumbers();
+
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./service-worker.js").catch(error => {
+            console.error("Could not register the app service worker:", error);
+          });
+        });
+      }
+
+      let installPrompt;
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        installPrompt = event;
+        document.querySelector("#installButton").hidden = false;
+      });
+      document.querySelector("#installButton").addEventListener("click", async () => {
+        if (!installPrompt) {
+          announce("In Edge, open Settings and more > Apps > Install this site as an app. Then open Tiny Tails and right-click its taskbar icon to pin it.");
+          return;
+        }
+        await installPrompt.prompt();
+        const choice = await installPrompt.userChoice;
+        installPrompt = null;
+        if (choice.outcome === "accepted") {
+          document.querySelector("#installButton").hidden = true;
+          announce("Tiny Tails is installed. Open it, then right-click its taskbar icon and choose Pin to taskbar.");
+        }
+      });
+      window.addEventListener("appinstalled", () => {
+        document.querySelector("#installButton").hidden = true;
+        announce("Tiny Tails is installed. Open it, then right-click its taskbar icon and choose Pin to taskbar.");
+      });
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        document.querySelector("#installButton").hidden = true;
+      }
+    </script>
+  </body>
+</html>
