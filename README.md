@@ -37,5 +37,3 @@ sudo docker run -d --name tiny-tails --restart unless-stopped -p 80:8000 tiny-ta
 
 The site uses browser speech synthesis and external Wikimedia image URLs, so those features depend on the visitor's browser and internet connection.
 
-
-Testing GitHub Actions
